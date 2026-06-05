@@ -1520,29 +1520,62 @@
   else document.addEventListener('DOMContentLoaded', applySectionLabels);
 
   // Personas slide — click a card to show that persona's quote(s) below.
+  // Each quote: [en, ru, who]. The "Перевести" toggle flips language.
   function initPersonas(){
     var box = document.getElementById('pqQuote');
     var cards = [].slice.call(document.querySelectorAll('.persona[data-persona]'));
     if(!box || !cards.length) return;
     var Q = {
-      whale: [['All my payments are declining since this money and when I try to even make a withdrawal, it shows ‘account restricted’ — but my account is fully verified and I’ve been using it for almost one year', '@fhassan']],
+      whale: [[
+        'All my payments are declining since this money and when I try to even make a withdrawal, it shows ‘account restricted’ — but my account is fully verified and I’ve been using it for almost one year',
+        'Все мои платежи отклоняются с тех пор, как пришли эти деньги, и когда я пытаюсь хотя бы вывести — пишет «account restricted». А у меня аккаунт полностью верифицирован, и я пользуюсь им уже почти год.',
+        '@fhassan'
+      ]],
       nomad: [
-        ['The Serbian bank will destroy me if I receive 1000 euros on my personal card — I’d have to prove where it came from', '@icanbreathe'],
-        ['I have been trying to pay with multiple VISAs from different countries, nothing works for me', '@fhassan']
+        [
+          'The Serbian bank will destroy me if I receive 1000 euros on my personal card — I’d have to prove where it came from',
+          'Сербский банк меня уничтожит, если я получу 1000 евро на личную карту — придётся доказывать, откуда они вообще.',
+          '@icanbreathe'
+        ],
+        [
+          'I have been trying to pay with multiple VISAs from different countries, nothing works for me',
+          'Я пробовал платить разными VISA из разных стран — ничего не работает.',
+          '@fhassan'
+        ]
       ],
-      builder: [['I needed it for Google Cloud and had a similar problem — tried more than one Visa', '@AbdoAlaziz']],
-      survivalist: [['Logic says everything should grow — inflation rises, salaries should rise too. But here we’re going down.', '@merkowmz']]
+      builder: [[
+        'I needed it for Google Cloud and had a similar problem — tried more than one Visa',
+        'Она была нужна мне для Google Cloud, и была такая же проблема — пробовал не одну Visa.',
+        '@AbdoAlaziz'
+      ]],
+      survivalist: [[
+        'Logic says everything should grow — inflation rises, salaries should rise too. But here we’re going down.',
+        'По логике всё должно расти — инфляция вверх, и зарплаты должны вверх. А у нас тут — наоборот, вниз.',
+        '@merkowmz'
+      ]]
     };
-    function render(key){
-      var items = Q[key] || [];
-      box.innerHTML = items.map(function(it){
-        return '<p class="pq-q">“' + it[0] + '” <span class="pq-who">— ' + it[1] + '</span></p>';
+    var currentKey = null;
+    var lang = 'en'; // 'en' | 'ru'
+    function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function render(){
+      var items = Q[currentKey] || [];
+      var quotesHtml = items.map(function(it){
+        var text = lang === 'ru' ? it[1] : it[0];
+        return '<p class="pq-q">“' + esc(text) + '” <span class="pq-who">— ' + esc(it[2]) + '</span></p>';
       }).join('');
+      var btnLabel = lang === 'ru' ? 'Original' : 'Перевести';
+      box.innerHTML = quotesHtml +
+        '<div style="display:flex; justify-content:flex-end; margin-top:8px;">' +
+          '<button type="button" class="pq-tr" aria-label="Translate">' + btnLabel + '</button>' +
+        '</div>';
+      var btn = box.querySelector('.pq-tr');
+      if(btn) btn.addEventListener('click', function(){ lang = (lang === 'ru' ? 'en' : 'ru'); render(); });
     }
     function select(card){
       cards.forEach(function(c){ c.classList.remove('sel'); });
       card.classList.add('sel');
-      render(card.getAttribute('data-persona'));
+      currentKey = card.getAttribute('data-persona');
+      render();
     }
     cards.forEach(function(card){
       card.addEventListener('click', function(){ select(card); });
@@ -1829,6 +1862,8 @@
   .pq-quote{ margin-top:24px; background:var(--pp-card); border:1px solid var(--pp-line); border-left:3px solid var(--pp-acid); border-radius:var(--pp-r-card); padding:26px 34px; display:flex; flex-direction:column; gap:16px; min-height:96px; justify-content:center; flex:none; }
   .pq-q{ font-family:var(--pp-font-body); font-size:26px; line-height:1.4; color:var(--pp-fg); margin:0; text-wrap:pretty; }
   .pq-who{ font-family:var(--pp-font-display); font-weight:600; color:var(--pp-acid); white-space:nowrap; }
+  .pq-tr{ font-family:var(--pp-font-display); font-weight:600; font-size:18px; color:var(--pp-fg-2); background:transparent; border:1px solid var(--pp-line); border-radius:100px; padding:6px 16px; cursor:pointer; transition:background .15s ease, color .15s ease, border-color .15s ease; }
+  .pq-tr:hover{ background:var(--pp-acid); color:#030303; border-color:var(--pp-acid); }
   .ptag{ position:absolute; top:36px; right:32px; display:inline-flex; align-self:flex-start; font-family:var(--pp-font-display); font-weight:600; font-size:25px; color:var(--pp-fg-2); background:var(--pp-surface-3); border-radius:100px; padding:5px 14px; }
   .ptag.acid-tag{ background:var(--pp-acid); color:#0b0b0b; }
   .prow{ display:flex; justify-content:space-between; align-items:baseline; padding:11px 0; border-bottom:1px solid var(--pp-line); font-family:var(--pp-font-body); font-size:22px; color:var(--pp-fg-3); }
