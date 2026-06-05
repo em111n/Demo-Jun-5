@@ -921,7 +921,10 @@
   </section><section data-label="Процесс крео" class="s" data-om-id="b4ae688b:918" data-screen-label="26 Процесс крео" data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text" data-deck-slide="25">
     <div class="topbar" data-om-id="b4ae688b:919">
       <img class="logo" src="assets/karta-logo-white.svg" alt="Karta" data-om-id="b4ae688b:920">
-      <span class="pp-label" data-om-id="85b1f7a5:910">Creative pipeline</span>
+      <div style="display:flex; align-items:center; gap:20px;">
+        <span class="pp-label" data-om-id="85b1f7a5:910">Creative pipeline</span>
+        <button class="mk-btn" type="button" onclick="openMediaKit()" aria-label="Открыть MediaKit">MediaKit ↗</button>
+      </div>
     </div>
     <h2 class="s-title" data-om-id="85b1f7a5:911">Creative pipeline</h2>
     <p class="body" style="font-size:30px; margin-top:10px;" data-om-id="85b1f7a5:912">Каждый креатив начинается с портрета, а не с идеи</p>
@@ -1369,6 +1372,36 @@
 
 </deck-stage>
 
+<div class="mk-modal" id="mkModal" aria-hidden="true" role="dialog" aria-label="Media Kit">
+  <button class="mk-close" type="button" aria-label="Закрыть MediaKit" onclick="closeMediaKit()">×</button>
+  <iframe id="mkFrame" title="Karta Media Kit" referrerpolicy="no-referrer-when-downgrade"></iframe>
+</div>
+<script>
+  (function(){
+    var MK_URL = 'https://rokachmax-sys.github.io/karta-media-kit/';
+    window.openMediaKit = function(){
+      var m = document.getElementById('mkModal');
+      var f = document.getElementById('mkFrame');
+      if(!m || !f) return;
+      if(!f.src) f.src = MK_URL;
+      m.classList.add('show');
+      m.setAttribute('aria-hidden', 'false');
+    };
+    window.closeMediaKit = function(){
+      var m = document.getElementById('mkModal');
+      if(!m) return;
+      m.classList.remove('show');
+      m.setAttribute('aria-hidden', 'true');
+    };
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape'){
+        var m = document.getElementById('mkModal');
+        if(m && m.classList.contains('show')) window.closeMediaKit();
+      }
+    });
+  })();
+</script>
+
 <div class="lightbox" id="lightbox" aria-hidden="true">
   <button class="lb-close" type="button" aria-label="Закрыть">×</button>
   <button class="lb-nav lb-prev" type="button" aria-label="Предыдущая">‹</button>
@@ -1773,6 +1806,15 @@
   /* check / cross marks */
   .ok{ color:var(--pp-acid); font-weight:800; font-family:var(--pp-font-display); flex:none; }
   .no{ color:var(--red); font-weight:800; font-family:var(--pp-font-display); flex:none; }
+
+  /* media-kit button + modal (slide 26) */
+  .mk-btn{ display:inline-flex; align-items:center; gap:10px; font-family:var(--pp-font-display); font-weight:600; font-size:22px; color:#030303; background:var(--pp-acid); border:none; border-radius:100px; padding:10px 20px; cursor:pointer; transition:transform .15s ease, box-shadow .15s ease; }
+  .mk-btn:hover{ transform:translateY(-1px); box-shadow:0 8px 24px rgba(204,255,0,.28); }
+  .mk-modal{ position:fixed; inset:0; z-index:99999; display:none; background:#000; }
+  .mk-modal.show{ display:block; }
+  .mk-modal iframe{ width:100%; height:100%; border:0; display:block; }
+  .mk-close{ position:absolute; top:24px; right:28px; width:52px; height:52px; border-radius:50%; border:none; background:rgba(255,255,255,.14); color:#fff; font-family:var(--pp-font-display); font-size:30px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .2s ease; z-index:2; }
+  .mk-close:hover{ background:rgba(255,255,255,.28); }
 
   /* personas (slide 25) */
   .persona{ padding:32px; position:relative; cursor:pointer; transition:box-shadow .2s ease, transform .2s ease; }
